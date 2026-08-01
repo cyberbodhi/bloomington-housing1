@@ -4,37 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Two Cities, One Zip Code — The Bloomington Housing Bifurcation</title>
+<meta name="description" content="A visual analysis of Bloomington, Indiana's bifurcated student and resident housing markets, and why Missing Middle upzoning has not delivered affordability.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#101c26;
-  --blueprint:#20384a;
-  --blueprint-line:#3d6d8c;
-  --paper:#eee9dd;
-  --paper-dim:#c9c2ac;
-  --amber:#e3b23c;
-  --rust:#b5432f;
-  --text-light:#dbe4e9;
-  --text-dim:#8fa6b3;
-  --line-grid: rgba(219,228,233,0.08);
+  --bg:#ffffff;
+  --panel-dark:#0d0d0d;
+  --panel-dark-line:#3a3a3a;
+  --ink:#000000;
+  --dim:#595959;
+  --line:rgba(0,0,0,0.14);
+  --line-strong:#000000;
+  --line-grid: rgba(0,0,0,0.06);
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{
   margin:0;
-  background:var(--ink);
-  color:var(--text-light);
+  background:var(--bg);
+  color:var(--ink);
   font-family:'Source Serif 4', serif;
   font-size:17px;
   line-height:1.6;
 }
-h1,h2,h3,.display{
+h1,h2,h3,h4,.display{
   font-family:'Space Grotesk', sans-serif;
   font-weight:700;
   letter-spacing:-0.01em;
-  color:#f4f1e8;
+  color:var(--ink);
 }
 .mono{
   font-family:'IBM Plex Mono', monospace;
@@ -45,7 +44,8 @@ h1,h2,h3,.display{
   font-size:0.72rem;
   letter-spacing:0.18em;
   text-transform:uppercase;
-  color:var(--amber);
+  color:var(--ink);
+  font-weight:600;
   display:flex;
   align-items:center;
   gap:0.6em;
@@ -54,11 +54,12 @@ h1,h2,h3,.display{
 .eyebrow::before{
   content:"";
   width:22px;
-  height:1px;
-  background:var(--amber);
+  height:2px;
+  background:var(--ink);
   display:inline-block;
 }
-a{color:var(--amber);}
+a{color:var(--ink); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1.5px;}
+a:hover{text-decoration-thickness:2.5px;}
 .wrap{
   max-width:1120px;
   margin:0 auto;
@@ -67,8 +68,39 @@ a{color:var(--amber);}
 section{
   position:relative;
   padding:110px 0;
-  border-bottom:1px solid rgba(219,228,233,0.08);
+  border-bottom:1px solid var(--line);
+  scroll-margin-top:90px;
 }
+/* skip link */
+.skip-link{
+  position:absolute;
+  left:12px;
+  top:-60px;
+  background:#000;
+  color:#fff;
+  padding:12px 18px;
+  z-index:1000;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:0.85rem;
+  text-decoration:none;
+  border-radius:2px;
+  transition:top 0.15s ease;
+}
+.skip-link:focus{top:12px;}
+
+/* visible focus for keyboard users, everywhere on the light page */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible{
+  outline:3px solid #000;
+  outline-offset:3px;
+}
+/* inside the dark panel, flip the ring to white so it stays visible */
+.blueprint-panel :focus-visible{
+  outline:3px solid #fff;
+  outline-offset:2px;
+}
+
 /* blueprint grid background */
 .grid-bg{
   background-image:
@@ -77,25 +109,35 @@ section{
   background-size:40px 40px;
 }
 /* ---------- NAV ---------- */
-nav{
+header.site-header{
   position:fixed;
   top:0; left:0; right:0;
   z-index:100;
+}
+nav{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:18px 32px;
-  background:rgba(16,28,38,0.88);
+  padding:14px 32px;
+  background:rgba(255,255,255,0.94);
   backdrop-filter:blur(6px);
-  border-bottom:1px solid rgba(219,228,233,0.08);
+  border-bottom:1px solid var(--line-strong);
   font-family:'IBM Plex Mono', monospace;
   font-size:0.78rem;
 }
-nav .brand{color:#f4f1e8; letter-spacing:0.05em;}
-nav .brand b{color:var(--amber);}
-nav ul{list-style:none; display:flex; gap:26px; margin:0; padding:0;}
-nav a{color:var(--text-dim); text-decoration:none; text-transform:uppercase; letter-spacing:0.08em; font-size:0.72rem;}
-nav a:hover{color:var(--amber);}
+nav .brand{color:var(--ink); letter-spacing:0.05em; font-weight:600;}
+nav ul{list-style:none; display:flex; gap:8px; margin:0; padding:0;}
+nav a{
+  color:var(--ink);
+  text-decoration:none;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  font-size:0.72rem;
+  padding:10px 8px;
+  display:inline-block;
+  border-bottom:2px solid transparent;
+}
+nav a:hover{border-bottom-color:var(--ink);}
 @media (max-width:820px){ nav ul{display:none;} }
 
 /* ---------- HERO ---------- */
@@ -109,134 +151,130 @@ nav a:hover{color:var(--amber);}
   overflow:hidden;
 }
 .hero .wrap{position:relative; z-index:2;}
-.hero-tag{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:22px;}
+.hero-tag{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:22px;}
 .hero h1{
   font-size:clamp(2.6rem, 6vw, 5.1rem);
-  line-height:0.98;
+  line-height:1.05;
   margin:0 0 30px;
-  max-width:14ch;
+  max-width:15ch;
 }
 .hero h1 em{
   font-style:normal;
-  color:var(--amber);
+  background:#000;
+  color:#fff;
+  padding:0.02em 0.2em;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
 }
 .hero p.lede{
   max-width:640px;
   font-size:1.2rem;
-  color:var(--text-light);
+  color:var(--ink);
   margin-bottom:44px;
 }
 .hero-stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:0;
-  border-top:1px solid rgba(219,228,233,0.18);
+  border-top:2px solid var(--ink);
   max-width:760px;
 }
 .hero-stats div{
   padding:20px 26px 6px 0;
-  border-right:1px solid rgba(219,228,233,0.18);
+  border-right:1px solid var(--line);
 }
 .hero-stats div:last-child{border-right:none;}
 .hero-stats .num{
   font-family:'Space Grotesk',sans-serif;
   font-weight:700;
   font-size:2.1rem;
-  color:#f4f1e8;
+  color:var(--ink);
   display:block;
 }
 .hero-stats .lbl{
   font-family:'IBM Plex Mono',monospace;
   font-size:0.7rem;
-  color:var(--text-dim);
+  color:var(--dim);
   text-transform:uppercase;
   letter-spacing:0.06em;
 }
-@media (max-width:640px){ .hero-stats{grid-template-columns:1fr; } .hero-stats div{border-right:none; border-bottom:1px solid rgba(219,228,233,0.18); padding-bottom:16px;} }
-
-.crosshair{
-  position:absolute;
-  width:14px; height:14px;
-  opacity:0.5;
-}
-.crosshair::before,.crosshair::after{content:"";position:absolute;background:var(--blueprint-line);}
-.crosshair::before{width:100%;height:1px;top:50%;}
-.crosshair::after{width:1px;height:100%;left:50%;}
+@media (max-width:640px){ .hero-stats{grid-template-columns:1fr; } .hero-stats div{border-right:none; border-bottom:1px solid var(--line); padding-bottom:16px;} }
 
 /* ---------- SECTION HEADS ---------- */
 .section-head{max-width:760px; margin-bottom:56px;}
 .section-head h2{font-size:clamp(1.8rem,3.4vw,2.7rem); margin:0 0 18px; line-height:1.08;}
-.section-head p{color:var(--text-dim); font-size:1.05rem; max-width:640px;}
+.section-head p{color:var(--dim); font-size:1.05rem; max-width:640px;}
 
 /* ---------- BIFURCATION (two-market) ---------- */
 .market-split{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:1px;
-  background:rgba(219,228,233,0.15);
-  border:1px solid rgba(219,228,233,0.15);
+  background:var(--line-strong);
+  border:1px solid var(--line-strong);
 }
 .market-col{
-  background:var(--ink);
+  background:var(--bg);
   padding:40px 36px;
+  border-top:4px solid var(--ink);
 }
-.market-col.student{background:linear-gradient(180deg, rgba(181,67,47,0.10), transparent 40%);}
-.market-col.resident{background:linear-gradient(180deg, rgba(61,109,140,0.14), transparent 40%);}
+.market-col.student{border-top-style:solid;}
+.market-col.resident{border-top-style:dashed;}
 .market-col h3{
   font-family:'IBM Plex Mono',monospace;
   font-size:0.78rem;
   text-transform:uppercase;
   letter-spacing:0.1em;
-  color:var(--text-dim);
+  color:var(--dim);
   margin:0 0 8px;
+  font-weight:600;
 }
 .market-col .headline{
   font-family:'Space Grotesk',sans-serif;
   font-weight:700;
   font-size:2.6rem;
-  color:#f4f1e8;
+  color:var(--ink);
   margin-bottom:6px;
 }
-.market-col .sub{color:var(--text-dim); font-size:0.9rem; margin-bottom:26px; font-family:'IBM Plex Mono',monospace;}
+.market-col .sub{color:var(--dim); font-size:0.9rem; margin-bottom:26px; font-family:'IBM Plex Mono',monospace;}
 .market-col ul{list-style:none;margin:0;padding:0;}
 .market-col li{
   padding:14px 0;
-  border-top:1px dashed rgba(219,228,233,0.18);
+  border-top:1px dashed var(--line);
   font-size:0.98rem;
 }
-.market-col li:first-of-type{border-top:1px dashed rgba(219,228,233,0.18);}
-.market-col li b{display:block; color:#f4f1e8; font-family:'Space Grotesk',sans-serif; font-weight:600; margin-bottom:3px;}
+.market-col li b{display:block; color:var(--ink); font-family:'Space Grotesk',sans-serif; font-weight:600; margin-bottom:3px;}
 @media (max-width:760px){ .market-split{grid-template-columns:1fr;} }
 
 /* ---------- BLUEPRINT DIAGRAM (signature) ---------- */
 .blueprint-panel{
-  border:1px solid rgba(219,228,233,0.22);
-  background:
-    radial-gradient(circle at 15% 10%, rgba(61,109,140,0.18), transparent 55%),
-    var(--blueprint);
+  border:1px solid var(--ink);
+  background:var(--panel-dark);
+  color:#f2f2f2;
   padding:0;
   position:relative;
 }
 .bp-toggle{
   display:flex;
-  border-bottom:1px solid rgba(219,228,233,0.22);
+  border-bottom:1px solid var(--panel-dark-line);
 }
 .bp-toggle button{
   flex:1;
   padding:18px 20px;
   background:transparent;
   border:none;
-  color:var(--text-dim);
+  color:#b5b5b5;
   font-family:'IBM Plex Mono',monospace;
   font-size:0.78rem;
   letter-spacing:0.08em;
   text-transform:uppercase;
   cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:color 0.2s, border-color 0.2s;
+  border-bottom:3px solid transparent;
+  transition:color 0.15s, border-color 0.15s;
+  min-height:44px;
 }
-.bp-toggle button.active{color:var(--amber); border-bottom-color:var(--amber);}
-.bp-toggle button:not(.active):hover{color:var(--text-light);}
+.bp-toggle button.active{color:#ffffff; border-bottom-color:#ffffff; font-weight:600;}
+.bp-toggle button:not(.active):hover{color:#f2f2f2;}
 .bp-stage{
   display:grid;
   grid-template-columns:1.3fr 1fr;
@@ -247,7 +285,7 @@ nav a:hover{color:var(--amber);}
   display:flex;
   align-items:center;
   justify-content:center;
-  border-right:1px solid rgba(219,228,233,0.22);
+  border-right:1px solid var(--panel-dark-line);
 }
 .bp-drawing svg{width:100%; height:auto; max-width:520px;}
 .bp-readout{padding:34px;}
@@ -255,34 +293,35 @@ nav a:hover{color:var(--amber);}
   font-family:'Space Grotesk',sans-serif;
   font-weight:700;
   font-size:2.4rem;
-  color:var(--amber);
+  color:#ffffff;
   margin-bottom:2px;
-  transition:color 0.2s;
 }
-.bp-readout .rev.alt{color:#8fd0a9;}
-.bp-readout .rev-lbl{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:26px;}
-.bp-readout dl{margin:0; padding-top:18px; border-top:1px dashed rgba(219,228,233,0.22);}
-.bp-readout dt{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; color:var(--text-dim); letter-spacing:0.06em; margin-top:16px;}
+.bp-readout .rev-lbl{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#b5b5b5; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:26px;}
+.bp-readout dl{margin:0; padding-top:18px; border-top:1px dashed var(--panel-dark-line);}
+.bp-readout dt{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; color:#b5b5b5; letter-spacing:0.06em; margin-top:16px;}
 .bp-readout dt:first-child{margin-top:0;}
-.bp-readout dd{margin:4px 0 0; color:var(--text-light); font-size:0.95rem;}
-@media (max-width:760px){ .bp-stage{grid-template-columns:1fr;} .bp-drawing{border-right:none; border-bottom:1px solid rgba(219,228,233,0.22);} }
+.bp-readout dd{margin:4px 0 0; color:#f2f2f2; font-size:0.95rem;}
+@media (max-width:760px){ .bp-stage{grid-template-columns:1fr;} .bp-drawing{border-right:none; border-bottom:1px solid var(--panel-dark-line);} }
 
 /* ---------- MATH / PER-BED ---------- */
 .math-strip{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  border:1px solid rgba(219,228,233,0.18);
+  border:1px solid var(--ink);
 }
 .math-cell{
   padding:28px 22px;
-  border-right:1px solid rgba(219,228,233,0.18);
+  border-right:1px solid var(--line);
   text-align:center;
 }
-.math-cell:last-child{border-right:none; background:rgba(181,67,47,0.14);}
-.math-cell .op{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; color:var(--text-dim); margin-bottom:10px;}
-.math-cell .val{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#f4f1e8;}
-.math-cell .val small{display:block; font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:0.68rem; color:var(--text-dim); margin-top:4px; text-transform:uppercase; letter-spacing:0.06em;}
-@media (max-width:760px){ .math-strip{grid-template-columns:1fr 1fr;} .math-cell{border-bottom:1px solid rgba(219,228,233,0.18);} }
+.math-cell:last-child{border-right:none; background:#000; color:#fff;}
+.math-cell .op{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; color:var(--dim); margin-bottom:10px;}
+.math-cell:last-child .op{color:#cfcfcf;}
+.math-cell .val{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:var(--ink);}
+.math-cell:last-child .val{color:#fff;}
+.math-cell .val small{display:block; font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:0.68rem; color:var(--dim); margin-top:4px; text-transform:uppercase; letter-spacing:0.06em;}
+.math-cell:last-child .val small{color:#cfcfcf;}
+@media (max-width:760px){ .math-strip{grid-template-columns:1fr 1fr;} .math-cell{border-bottom:1px solid var(--line);} }
 
 .callout-value{
   display:flex;
@@ -290,25 +329,25 @@ nav a:hover{color:var(--amber);}
   gap:18px;
   margin-top:36px;
   padding-top:28px;
-  border-top:1px solid rgba(219,228,233,0.18);
+  border-top:2px solid var(--ink);
 }
-.callout-value .big{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:3.4rem; color:var(--rust);}
-.callout-value p{margin:0; color:var(--text-dim); max-width:420px; font-size:0.95rem;}
+.callout-value .big{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:3.4rem; color:var(--ink);}
+.callout-value p{margin:0; color:var(--dim); max-width:420px; font-size:0.95rem;}
 
 /* ---------- STATUTE ---------- */
 .statute-block{
-  border-left:3px solid var(--amber);
+  border-left:4px solid var(--ink);
   padding:26px 30px;
-  background:rgba(227,178,60,0.06);
+  background:rgba(0,0,0,0.035);
   margin:34px 0;
 }
-.statute-block .code{font-family:'IBM Plex Mono',monospace; color:var(--amber); font-size:0.82rem; margin-bottom:10px; letter-spacing:0.04em;}
-.statute-block p{margin:0; color:var(--text-light); font-size:1.02rem;}
-.tool-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(219,228,233,0.15); border:1px solid rgba(219,228,233,0.15); margin-top:20px;}
-.tool-cell{background:var(--ink); padding:24px 22px;}
-.tool-cell .status{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--rust); margin-bottom:10px;}
-.tool-cell h4{margin:0 0 8px; font-family:'Space Grotesk',sans-serif; font-size:1.05rem; color:#f4f1e8;}
-.tool-cell p{margin:0; font-size:0.88rem; color:var(--text-dim);}
+.statute-block .code{font-family:'IBM Plex Mono',monospace; color:var(--ink); font-weight:600; font-size:0.82rem; margin-bottom:10px; letter-spacing:0.04em;}
+.statute-block p{margin:0; color:var(--ink); font-size:1.02rem;}
+.tool-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-strong); border:1px solid var(--line-strong); margin-top:20px;}
+.tool-cell{background:var(--bg); padding:24px 22px;}
+.tool-cell .status{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink); margin-bottom:10px; font-weight:600;}
+.tool-cell h4{margin:0 0 8px; font-family:'Space Grotesk',sans-serif; font-size:1.05rem; color:var(--ink);}
+.tool-cell p{margin:0; font-size:0.88rem; color:var(--dim);}
 @media (max-width:760px){ .tool-grid{grid-template-columns:1fr;} }
 
 /* ---------- INFRASTRUCTURE ---------- */
@@ -317,68 +356,78 @@ nav a:hover{color:var(--amber);}
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:22px;
-  border:1px solid rgba(219,228,233,0.18);
+  border:1px solid var(--ink);
   padding:30px;
   margin-top:10px;
 }
-.infra-compare .side{}
-.infra-compare .side h4{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin:0 0 14px;}
+.infra-compare .side h4{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--dim); margin:0 0 14px;}
 .infra-compare .side ul{list-style:none; margin:0; padding:0;}
-.infra-compare .side li{padding:8px 0; font-size:0.92rem; border-top:1px dashed rgba(219,228,233,0.15);}
+.infra-compare .side li{padding:8px 0; font-size:0.92rem; border-top:1px dashed var(--line);}
 .infra-compare .side li:first-child{border-top:none;}
-.infra-compare .arrow{font-family:'Space Grotesk',sans-serif; font-size:1.6rem; color:var(--amber);}
+.infra-compare .arrow{font-family:'Space Grotesk',sans-serif; font-size:1.6rem; color:var(--ink); font-weight:700;}
 @media (max-width:700px){ .infra-compare{grid-template-columns:1fr; text-align:left;} .infra-compare .arrow{transform:rotate(90deg);} }
 
 /* ---------- MATRIX ---------- */
 table.matrix{width:100%; border-collapse:collapse; margin-top:10px;}
+table.matrix caption{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--dim); margin-bottom:14px;}
 table.matrix th{
   font-family:'IBM Plex Mono',monospace;
   font-size:0.7rem;
   text-transform:uppercase;
   letter-spacing:0.06em;
-  color:var(--text-dim);
+  color:var(--ink);
   text-align:left;
   padding:14px 20px;
-  border-bottom:1px solid rgba(219,228,233,0.25);
+  border-bottom:2px solid var(--ink);
 }
 table.matrix td{
   padding:20px;
-  border-bottom:1px solid rgba(219,228,233,0.12);
+  border-bottom:1px solid var(--line);
   font-size:0.95rem;
   vertical-align:top;
 }
-table.matrix td.theory{color:var(--text-dim);}
-table.matrix td.reality{color:var(--text-light);}
-table.matrix tr:hover td{background:rgba(219,228,233,0.03);}
+table.matrix td.theory{color:var(--dim);}
+table.matrix td.reality{color:var(--ink); font-weight:500;}
+table.matrix tr:hover td{background:rgba(0,0,0,0.03);}
 .matrix-wrap{overflow-x:auto;}
 table.matrix{min-width:680px;}
 
 /* ---------- POLICY ---------- */
-.policy-list{counter-reset:policy; margin-top:20px;}
 .policy-item{
   display:grid;
   grid-template-columns:90px 1fr;
   gap:24px;
   padding:34px 0;
-  border-top:1px solid rgba(219,228,233,0.15);
+  border-top:1px solid var(--line);
 }
 .policy-item:first-child{border-top:none;}
-.policy-num{font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--amber);}
+.policy-num{font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--ink); font-weight:600;}
 .policy-item h3{margin:0 0 10px; font-size:1.35rem;}
-.policy-item p{margin:0 0 14px; color:var(--text-light);}
-.policy-item .obj{font-size:0.88rem; color:var(--text-dim); font-style:italic;}
+.policy-item p{margin:0 0 14px; color:var(--ink);}
+.policy-item .obj{font-size:0.88rem; color:var(--dim); font-style:italic;}
 @media (max-width:600px){ .policy-item{grid-template-columns:1fr;} }
 
 /* ---------- SOURCES / FOOTER ---------- */
 footer{padding:70px 0 50px;}
-.source-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(219,228,233,0.15); border:1px solid rgba(219,228,233,0.15); margin:30px 0 50px;}
-.source-card{background:var(--ink); padding:26px 28px; text-decoration:none; display:block; transition:background 0.2s;}
-.source-card:hover{background:rgba(219,228,233,0.04);}
-.source-card .k{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; color:var(--text-dim); letter-spacing:0.08em; margin-bottom:8px;}
-.source-card .t{font-family:'Space Grotesk',sans-serif; font-weight:600; color:#f4f1e8; font-size:1.05rem; margin-bottom:6px;}
-.source-card .u{font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--blueprint-line); word-break:break-all;}
+.source-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line-strong); border:1px solid var(--line-strong); margin:30px 0 50px;}
+.source-card{background:var(--bg); padding:26px 28px; text-decoration:none; display:block; transition:background 0.15s; min-height:44px;}
+.source-card:hover, .source-card:focus-visible{background:rgba(0,0,0,0.045);}
+.source-card .k{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; color:var(--dim); letter-spacing:0.08em; margin-bottom:8px;}
+.source-card .t{font-family:'Space Grotesk',sans-serif; font-weight:600; color:var(--ink); font-size:1.05rem; margin-bottom:6px; text-decoration:underline; text-underline-offset:3px;}
+.source-card .u{font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--dim); word-break:break-all;}
 @media (max-width:700px){ .source-grid{grid-template-columns:1fr;} }
-footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
+footer .fine{color:var(--dim); font-size:0.85rem; max-width:640px;}
+
+/* visually-hidden utility for screen-reader-only text */
+.sr-only{
+  position:absolute;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
 
 /* reveal on scroll */
 .reveal{opacity:0; transform:translateY(18px); transition:opacity 0.7s ease, transform 0.7s ease;}
@@ -392,8 +441,11 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </head>
 <body>
 
-<nav>
-  <div class="brand">BLOOMINGTON <b>/</b> HOUSING FILE</div>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+<nav aria-label="Primary">
+  <div class="brand">BLOOMINGTON / HOUSING FILE</div>
   <ul>
     <li><a href="#markets">Two Markets</a></li>
     <li><a href="#blueprint">The Blueprint</a></li>
@@ -403,12 +455,15 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
     <li><a href="#policy">Policy</a></li>
   </ul>
 </nav>
+</header>
+
+<main id="main">
 
 <!-- HERO -->
-<section class="hero grid-bg">
+<section class="hero grid-bg" aria-labelledby="hero-heading">
   <div class="wrap">
-    <div class="hero-tag">A structural reading of Bloomington, Indiana's rental market</div>
-    <h1>Upzoning didn't build starter homes.<br>It built <em>mini-dorms.</em></h1>
+    <p class="hero-tag">A structural reading of Bloomington, Indiana's rental market</p>
+    <h1 id="hero-heading">Upzoning didn't build starter homes.<br>It built <em>mini-dorms.</em></h1>
     <p class="lede">Indiana University enrolls roughly 45,000 students against a permanent population of about 35,000. When the city loosened zoning to allow duplexes and triplexes by right, the market didn't respond with modest infill for local families — it responded with per-bed suite housing priced for parental capital, not local wages.</p>
     <div class="hero-stats">
       <div><span class="num">33,000</span><span class="lbl">Students competing for off-campus beds</span></div>
@@ -419,19 +474,19 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- TWO MARKETS -->
-<section id="markets">
+<section id="markets" aria-labelledby="markets-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 01 — Bifurcation</div>
-      <h2>One rental market, two economies that never touch.</h2>
+      <p class="eyebrow">Section 01 — Bifurcation</p>
+      <h2 id="markets-heading">One rental market, two economies that never touch.</h2>
       <p>Bloomington isn't a single housing market with a supply problem. It's two submarkets sharing a zip code — one priced against local paychecks, one priced against parental wealth and loan disbursements. New density gets built for whichever one pays more per square foot, and that's never the resident market.</p>
     </div>
 
     <div class="market-split reveal">
       <div class="market-col student">
-        <h3>Submarket A</h3>
-        <div class="headline">The Student Renter</div>
-        <div class="sub">≈ 33,000 people / off-campus</div>
+        <h3>Submarket A · solid border</h3>
+        <p class="headline">The Student Renter</p>
+        <p class="sub">≈ 33,000 people / off-campus</p>
         <ul>
           <li><b>Priced in beds, not units.</b> A four-bedroom suite leasing at $1,500 a bed clears $6,000 a month from one footprint a family unit would rent for $2,000.</li>
           <li><b>Capital-bundled demand.</b> Rent is backed by parental income and loan disbursements, decoupled from local wages entirely.</li>
@@ -439,9 +494,9 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
         </ul>
       </div>
       <div class="market-col resident">
-        <h3>Submarket B</h3>
-        <div class="headline">The Permanent Resident</div>
-        <div class="sub">≈ 35,000 people / local wages</div>
+        <h3>Submarket B · dashed border</h3>
+        <p class="headline">The Permanent Resident</p>
+        <p class="sub">≈ 35,000 people / local wages</p>
         <ul>
           <li><b>Bound to local pay.</b> A mortgage or rent has to be amortized against Bloomington-metro wages — nurses, teachers, city staff, service workers.</li>
           <li><b>Bidding against commercial underwriting.</b> A family's pre-approval can't compete with a developer's pro forma built on eight-bed cash flow.</li>
@@ -453,77 +508,82 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- BLUEPRINT -->
-<section id="blueprint" class="grid-bg">
+<section id="blueprint" class="grid-bg" aria-labelledby="blueprint-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 02 — The Floor Plan Tells The Story</div>
-      <h2>Same lot, same zoning permit. Completely different building.</h2>
-      <p>"Missing Middle Housing" was theorized as duplexes and triplexes that look and live like the single-family homes around them — a shared living room, a kitchen table, a place to raise a kid. Toggle between what the permit allows and what actually gets built on that permit in Bloomington.</p>
+      <p class="eyebrow">Section 02 — The Floor Plan Tells The Story</p>
+      <h2 id="blueprint-heading">Same lot, same zoning permit. Completely different building.</h2>
+      <p>"Missing Middle Housing" was theorized as duplexes and triplexes that look and live like the single-family homes around them — a shared living room, a kitchen table, a place to raise a kid. Choose between what the permit allows and what actually gets built on that permit in Bloomington. The two floor plans below are told through line style and labels, not color: solid outlines and open rooms for the traditional plan, dashed partitions and hatched sleeping pods for the built reality.</p>
     </div>
 
     <div class="blueprint-panel reveal">
-      <div class="bp-toggle">
-        <button id="btn-trad" class="active" onclick="showPlan('trad')">Theoretical Missing Middle</button>
-        <button id="btn-dorm" onclick="showPlan('dorm')">Built in Bloomington</button>
+      <div class="bp-toggle" role="group" aria-label="Choose a floor plan to view">
+        <button type="button" id="btn-trad" class="active" aria-pressed="true" onclick="showPlan('trad')">Theoretical Missing Middle</button>
+        <button type="button" id="btn-dorm" aria-pressed="false" onclick="showPlan('dorm')">Built in Bloomington</button>
       </div>
       <div class="bp-stage">
         <div class="bp-drawing">
-          <svg id="plan-trad" viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="20" width="440" height="300" fill="none" stroke="#dbe4e9" stroke-width="2"/>
-            <line x1="240" y1="20" x2="240" y2="320" stroke="#dbe4e9" stroke-width="1.5" stroke-dasharray="4 3"/>
-            <!-- left half -->
-            <rect x="30" y="30" width="200" height="140" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="130" y="95" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="12">COMMON LIVING</text>
-            <text x="130" y="112" text-anchor="middle" fill="#8fa6b3" font-family="IBM Plex Mono" font-size="9">shared / dining</text>
-            <rect x="30" y="180" width="95" height="130" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="77" y="248" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="11">BEDROOM 1</text>
-            <rect x="135" y="180" width="95" height="130" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="182" y="248" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="11">BEDROOM 2</text>
-            <!-- right half mirror -->
-            <rect x="250" y="30" width="200" height="140" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="350" y="95" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="12">COMMON LIVING</text>
-            <text x="350" y="112" text-anchor="middle" fill="#8fa6b3" font-family="IBM Plex Mono" font-size="9">shared / dining</text>
-            <rect x="250" y="180" width="95" height="130" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="297" y="248" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="11">BEDROOM 1</text>
-            <rect x="355" y="180" width="95" height="130" fill="none" stroke="#3d6d8c" stroke-width="1.5"/>
-            <text x="402" y="248" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="11">BEDROOM 2</text>
-            <text x="240" y="336" text-anchor="middle" fill="#e3b23c" font-family="IBM Plex Mono" font-size="10">4 BEDROOMS · 1 SHARED BATH EACH SIDE</text>
+          <svg id="plan-trad" viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="plan-trad-title plan-trad-desc">
+            <title id="plan-trad-title">Theoretical Missing Middle duplex floor plan</title>
+            <desc id="plan-trad-desc">Each side of the duplex has one shared common living and dining room plus two bedrooms, drawn with solid outlines — a layout meant for one family or household per side.</desc>
+            <rect x="20" y="20" width="440" height="300" fill="none" stroke="#f2f2f2" stroke-width="2"/>
+            <line x1="240" y1="20" x2="240" y2="320" stroke="#f2f2f2" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <rect x="30" y="30" width="200" height="140" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="130" y="95" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="12">COMMON LIVING</text>
+            <text x="130" y="112" text-anchor="middle" fill="#b5b5b5" font-family="IBM Plex Mono" font-size="9">shared / dining</text>
+            <rect x="30" y="180" width="95" height="130" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="77" y="248" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="11">BEDROOM 1</text>
+            <rect x="135" y="180" width="95" height="130" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="182" y="248" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="11">BEDROOM 2</text>
+            <rect x="250" y="30" width="200" height="140" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="350" y="95" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="12">COMMON LIVING</text>
+            <text x="350" y="112" text-anchor="middle" fill="#b5b5b5" font-family="IBM Plex Mono" font-size="9">shared / dining</text>
+            <rect x="250" y="180" width="95" height="130" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="297" y="248" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="11">BEDROOM 1</text>
+            <rect x="355" y="180" width="95" height="130" fill="none" stroke="#f2f2f2" stroke-width="1.5"/>
+            <text x="402" y="248" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="11">BEDROOM 2</text>
+            <text x="240" y="336" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="10">4 BEDROOMS · 1 SHARED BATH EACH SIDE</text>
           </svg>
-          <svg id="plan-dorm" viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" style="display:none;">
-            <rect x="20" y="20" width="440" height="300" fill="none" stroke="#dbe4e9" stroke-width="2"/>
-            <line x1="240" y1="20" x2="240" y2="320" stroke="#dbe4e9" stroke-width="1.5" stroke-dasharray="4 3"/>
-            <!-- left half: 4 en-suite pods + kitchenette -->
-            <g stroke="#b5432f" stroke-width="1.3" fill="none">
+          <svg id="plan-dorm" viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" style="display:none;" role="img" aria-labelledby="plan-dorm-title plan-dorm-desc">
+            <title id="plan-dorm-title">Duplex floor plan as actually built in Bloomington</title>
+            <desc id="plan-dorm-desc">Each side of the duplex is subdivided, drawn with dashed hatched outlines, into four individually leased bedroom-and-bathroom pods around a minimal kitchenette, with no shared living room.</desc>
+            <defs>
+              <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="6" stroke="#5a5a5a" stroke-width="1.5"/>
+              </pattern>
+            </defs>
+            <rect x="20" y="20" width="440" height="300" fill="none" stroke="#f2f2f2" stroke-width="2"/>
+            <line x1="240" y1="20" x2="240" y2="320" stroke="#f2f2f2" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <g stroke="#f2f2f2" stroke-width="1.3" stroke-dasharray="5 3" fill="url(#hatch)">
               <rect x="30" y="30" width="105" height="80"/>
               <rect x="135" y="30" width="105" height="80"/>
               <rect x="30" y="110" width="105" height="80"/>
               <rect x="135" y="110" width="105" height="80"/>
-              <rect x="30" y="190" width="210" height="55"/>
             </g>
-            <text x="82" y="72" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="187" y="72" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="82" y="152" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="187" y="152" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="135" y="222" text-anchor="middle" fill="#8fa6b3" font-family="IBM Plex Mono" font-size="9">kitchenette</text>
-            <!-- right half mirror -->
-            <g stroke="#b5432f" stroke-width="1.3" fill="none">
+            <rect x="30" y="190" width="210" height="55" fill="none" stroke="#f2f2f2" stroke-width="1.3"/>
+            <text x="82" y="72" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="187" y="72" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="82" y="152" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="187" y="152" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="135" y="222" text-anchor="middle" fill="#b5b5b5" font-family="IBM Plex Mono" font-size="9">kitchenette</text>
+            <g stroke="#f2f2f2" stroke-width="1.3" stroke-dasharray="5 3" fill="url(#hatch)">
               <rect x="250" y="30" width="105" height="80"/>
               <rect x="355" y="30" width="105" height="80"/>
               <rect x="250" y="110" width="105" height="80"/>
               <rect x="355" y="110" width="105" height="80"/>
-              <rect x="250" y="190" width="210" height="55"/>
             </g>
-            <text x="302" y="72" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="407" y="72" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="302" y="152" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="407" y="152" text-anchor="middle" fill="#dbe4e9" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
-            <text x="355" y="222" text-anchor="middle" fill="#8fa6b3" font-family="IBM Plex Mono" font-size="9">kitchenette</text>
-            <text x="240" y="336" text-anchor="middle" fill="#b5432f" font-family="IBM Plex Mono" font-size="10">8 EN-SUITE BEDS · ZERO COMMON LIVING SPACE</text>
+            <rect x="250" y="190" width="210" height="55" fill="none" stroke="#f2f2f2" stroke-width="1.3"/>
+            <text x="302" y="72" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="407" y="72" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="302" y="152" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="407" y="152" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="9">BED+BATH</text>
+            <text x="355" y="222" text-anchor="middle" fill="#b5b5b5" font-family="IBM Plex Mono" font-size="9">kitchenette</text>
+            <text x="240" y="336" text-anchor="middle" fill="#f2f2f2" font-family="IBM Plex Mono" font-size="10">8 EN-SUITE BEDS · ZERO COMMON LIVING SPACE</text>
           </svg>
         </div>
-        <div class="bp-readout">
-          <div class="rev" id="rev-num">$4,000</div>
-          <div class="rev-lbl" id="rev-lbl">Gross monthly rent, family-priced unit</div>
+        <div class="bp-readout" aria-live="polite">
+          <p class="rev" id="rev-num">$4,000</p>
+          <p class="rev-lbl" id="rev-lbl">Gross monthly rent, family-priced unit</p>
           <dl id="rev-dl">
             <dt>Occupancy model</dt>
             <dd id="occ">4 bedrooms, whole-unit lease, one household per side</dd>
@@ -539,68 +599,68 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- MATH -->
-<section id="math">
+<section id="math" aria-labelledby="math-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 03 — The Financialization</div>
-      <h2>Why the market only builds one thing when you let it choose.</h2>
+      <p class="eyebrow">Section 03 — The Financialization</p>
+      <h2 id="math-heading">Why the market only builds one thing when you let it choose.</h2>
       <p>Zoning liberalization doesn't create a market — it reveals which use of the land pays best. On the same 0.25-acre lot, family-priced rent and per-bed student rent aren't close.</p>
     </div>
 
     <div class="math-strip reveal">
       <div class="math-cell">
-        <div class="op">Single-family cap</div>
-        <div class="val">$2,200<small>Max monthly rent, family market</small></div>
+        <p class="op">Single-family cap</p>
+        <p class="val">$2,200<small>Max monthly rent, family market</small></p>
       </div>
       <div class="math-cell">
-        <div class="op">8 beds ×</div>
-        <div class="val">$1,500<small>Per bed, per month</small></div>
+        <p class="op">8 beds ×</p>
+        <p class="val">$1,500<small>Per bed, per month</small></p>
       </div>
       <div class="math-cell">
-        <div class="op">Gross monthly</div>
-        <div class="val">$12,000<small>Same lot, duplex conversion</small></div>
+        <p class="op">Gross monthly</p>
+        <p class="val">$12,000<small>Same lot, duplex conversion</small></p>
       </div>
       <div class="math-cell">
-        <div class="op">Annualized</div>
-        <div class="val">$144,000<small>Gross yield, per-bed model</small></div>
+        <p class="op">Annualized</p>
+        <p class="val">$144,000<small>Gross yield, per-bed model</small></p>
       </div>
     </div>
 
     <div class="callout-value reveal">
-      <div class="big">600%</div>
+      <p class="big">600%</p>
       <p>A $250,000 single-family lot, re-underwritten on eight-bed student cash flow at a 6% cap rate, appraises past $1.5 million — pricing every local buyer out of the bid before they arrive.</p>
     </div>
   </div>
 </section>
 
 <!-- LAW -->
-<section id="law" class="grid-bg">
+<section id="law" class="grid-bg" aria-labelledby="law-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 04 — The Statutory Vacuum</div>
-      <h2>Indiana leaves the city no lever to pull.</h2>
+      <p class="eyebrow">Section 04 — The Statutory Vacuum</p>
+      <h2 id="law-heading">Indiana leaves the city no lever to pull.</h2>
       <p>In most states, a city facing this kind of price divergence can attach conditions to new density — reserve some units below market, or cap rent growth. Indiana's legislature has taken both tools off the table statewide.</p>
     </div>
 
     <div class="statute-block reveal">
-      <div class="code">IC 36-1-24.2</div>
+      <p class="code">IC 36-1-24.2</p>
       <p>Indiana Code preempts municipalities from enacting inclusionary zoning — the state prohibits local governments from requiring developers to set aside units at below-market rents, and separately preempts local rent stabilization ordinances entirely.</p>
     </div>
 
     <div class="tool-grid reveal">
       <div class="tool-cell">
-        <div class="status">Unavailable</div>
-        <h4>Affordability set-asides</h4>
+        <p class="status">✕ Unavailable</p>
+        <h3>Affordability set-asides</h3>
         <p>Cannot require any share of new duplex or triplex units to be reserved at below-market rent.</p>
       </div>
       <div class="tool-cell">
-        <div class="status">Unavailable</div>
-        <h4>Rent stabilization</h4>
+        <p class="status">✕ Unavailable</p>
+        <h3>Rent stabilization</h3>
         <p>Cannot cap year-over-year rent growth even in neighborhoods experiencing acute displacement pressure.</p>
       </div>
       <div class="tool-cell">
-        <div class="status">Available</div>
-        <h4>Zoning &amp; typology control</h4>
+        <p class="status">✓ Available</p>
+        <h3>Zoning &amp; typology control</h3>
         <p>Can still regulate bedroom counts, bathroom ratios, parking, and lot coverage — the levers this report leans on in its policy section.</p>
       </div>
     </div>
@@ -608,16 +668,16 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- INFRASTRUCTURE -->
-<section id="infra">
+<section id="infra" aria-labelledby="infra-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 05 — Underneath The Street</div>
-      <h2>"Growth pays for growth" assumes the pipes agree.</h2>
+      <p class="eyebrow">Section 05 — Underneath The Street</p>
+      <h2 id="infra-heading">"Growth pays for growth" assumes the pipes agree.</h2>
       <p>Core neighborhoods built between 1920 and 1960 carry 6–8 inch clay sewer lines sized for single-family peak flow. A one-time connection fee covers the tap — not the trunk-line and lift-station capacity eight simultaneous morning showers actually require.</p>
     </div>
     <div class="infra-compare reveal">
       <div class="side">
-        <h4>Single-family baseline</h4>
+        <h3>Single-family baseline</h3>
         <ul>
           <li>1 household, 3–4 residents</li>
           <li>1–2 vehicles</li>
@@ -625,9 +685,9 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
           <li>≈70% permeable yard space</li>
         </ul>
       </div>
-      <div class="arrow">→</div>
+      <div class="arrow" aria-hidden="true">→</div>
       <div class="side">
-        <h4>Converted student duplex</h4>
+        <h3>Converted student duplex</h3>
         <ul>
           <li>8–10 renters, high turnover</li>
           <li>4–8 vehicles, weekend traffic</li>
@@ -640,16 +700,17 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- MATRIX -->
-<section id="matrix" class="grid-bg">
+<section id="matrix" class="grid-bg" aria-labelledby="matrix-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 06 — Theory vs. Reality</div>
-      <h2>What Missing Middle promised, and what Bloomington got.</h2>
+      <p class="eyebrow">Section 06 — Theory vs. Reality</p>
+      <h2 id="matrix-heading">What Missing Middle promised, and what Bloomington got.</h2>
     </div>
     <div class="matrix-wrap reveal">
       <table class="matrix">
+        <caption>Five claims made for Missing Middle Housing, compared with the documented outcome in Bloomington</caption>
         <thead>
-          <tr><th style="width:38%">The theory</th><th>The Bloomington outcome</th></tr>
+          <tr><th scope="col" style="width:38%">The theory</th><th scope="col">The Bloomington outcome</th></tr>
         </thead>
         <tbody>
           <tr><td class="theory">Gentle infill enables fee-simple starter homes for first-time buyers.</td><td class="reality">Units are retained by institutional and student-focused landlords as cash-flowing rental assets.</td></tr>
@@ -664,65 +725,67 @@ footer .fine{color:var(--text-dim); font-size:0.85rem; max-width:640px;}
 </section>
 
 <!-- POLICY -->
-<section id="policy">
+<section id="policy" aria-labelledby="policy-heading">
   <div class="wrap">
     <div class="section-head reveal">
-      <div class="eyebrow">Section 07 — What The City Can Still Do</div>
-      <h2>Four levers that don't require state permission.</h2>
+      <p class="eyebrow">Section 07 — What The City Can Still Do</p>
+      <h2 id="policy-heading">Four levers that don't require state permission.</h2>
       <p>With inclusionary zoning and rent stabilization off the table, the remaining tools are physical, not financial — regulate what gets built, not what it costs.</p>
     </div>
-    <div class="policy-list reveal">
-      <div class="policy-item">
-        <div class="policy-num">01</div>
+    <ol class="policy-list reveal" style="list-style:none; margin:0; padding:0;">
+      <li class="policy-item">
+        <span class="policy-num" aria-hidden="true">01</span>
         <div>
           <h3>Cap bedrooms per unit</h3>
           <p>Limit duplex and triplex units in residential core overlays to two bedrooms, and prohibit en-suite bathrooms on every bedroom.</p>
           <p class="obj">Objective: remove the economic basis for the eight-bed pro forma entirely.</p>
         </div>
-      </div>
-      <div class="policy-item">
-        <div class="policy-num">02</div>
+      </li>
+      <li class="policy-item">
+        <span class="policy-num" aria-hidden="true">02</span>
         <div>
           <h3>Price the pipe, not just the tap</h3>
           <p>Assess connection fees against a property's peak hydraulic load — shower and toilet count — not a flat per-unit rate.</p>
           <p class="obj">Objective: internalize downstream sewer and lift-station upgrade costs onto the developer.</p>
         </div>
-      </div>
-      <div class="policy-item">
-        <div class="policy-num">03</div>
+      </li>
+      <li class="policy-item">
+        <span class="policy-num" aria-hidden="true">03</span>
         <div>
           <h3>Cap street parking permits</h3>
           <p>Limit residential permits to two per parcel regardless of unit count, and cap impervious rear-yard parking coverage at 20%.</p>
           <p class="obj">Objective: make high-vehicle-count student conversions self-limiting.</p>
         </div>
-      </div>
-      <div class="policy-item">
-        <div class="policy-num">04</div>
+      </li>
+      <li class="policy-item">
+        <span class="policy-num" aria-hidden="true">04</span>
         <div>
           <h3>Land-bank around the statute</h3>
           <p>Fund a municipal land bank or Community Land Trust to buy modest homes directly and deed-restrict them for owner-occupancy.</p>
           <p class="obj">Objective: enforce affordability through land ownership where state law forbids enforcing it through zoning.</p>
         </div>
-      </div>
-    </div>
+      </li>
+    </ol>
   </div>
 </section>
+
+</main>
 
 <!-- FOOTER / SOURCES -->
 <footer>
   <div class="wrap">
-    <div class="eyebrow reveal">Continue Reading</div>
+    <p class="eyebrow reveal">Continue Reading</p>
     <h2 class="reveal" style="max-width:600px;">Explore the underlying maps and data.</h2>
     <div class="source-grid reveal">
       <a class="source-card" href="https://storymaps.arcgis.com/stories/3f7742bd389143c3ba8b5e3e4029ed34" target="_blank" rel="noopener">
-        <div class="k">ArcGIS StoryMap</div>
-        <div class="t">Bloomington Housing Observatory</div>
-        <div class="u">storymaps.arcgis.com/stories/3f7742bd...</div>
+        <span class="k">ArcGIS StoryMap</span>
+        <span class="t">Bloomington Housing Observatory</span>
+        <span class="u">storymaps.arcgis.com/stories/3f7742bd...<span class="sr-only"> (opens in a new tab)</span></span>
       </a>
       <a class="source-card" href="https://experience.arcgis.com/experience/b1ba1b28448042ef9d0584204fcf1a9f" target="_blank" rel="noopener">
-        <div class="k">ArcGIS Experience</div>
-        <div class="t">Bloomington Housing Explorer</div>
-        <div class="u">experience.arcgis.com/experience/b1ba1b28...</div>
+        <span class="k">ArcGIS Experience</span>
+        <span class="t">Bloomington Housing Explorer</span>
+        <span class="u">experience.arcgis.com/experience/b1ba1b28...<span class="sr-only"> (opens in a new tab)</span></span>
       </a>
     </div>
     <p class="fine">This site summarizes and visualizes findings from an independent technical analysis of Missing Middle Housing policy outcomes in Bloomington, Indiana. Figures on enrollment, per-bed rents, and statutory citations (IC 36-1-24.2) are drawn from that report. It is intended to inform local policy discussion, not as a substitute for city planning documents or legal advice.</p>
@@ -744,10 +807,9 @@ function showPlan(kind){
   if(kind === 'trad'){
     trad.style.display = 'block';
     dorm.style.display = 'none';
-    btnT.classList.add('active');
-    btnD.classList.remove('active');
+    btnT.classList.add('active'); btnT.setAttribute('aria-pressed','true');
+    btnD.classList.remove('active'); btnD.setAttribute('aria-pressed','false');
     rev.textContent = '$4,000';
-    rev.classList.add('alt');
     lbl.textContent = 'Gross monthly rent, family-priced unit';
     occ.textContent = '4 bedrooms, whole-unit lease, one household per side';
     pri.textContent = 'Shared living room, dining space, functional storage';
@@ -755,10 +817,9 @@ function showPlan(kind){
   } else {
     trad.style.display = 'none';
     dorm.style.display = 'block';
-    btnD.classList.add('active');
-    btnT.classList.remove('active');
+    btnD.classList.add('active'); btnD.setAttribute('aria-pressed','true');
+    btnT.classList.remove('active'); btnT.setAttribute('aria-pressed','false');
     rev.textContent = '$12,000';
-    rev.classList.remove('alt');
     lbl.textContent = 'Gross monthly rent, per-bed student model';
     occ.textContent = '8 individually leased bedrooms, fractionalized turnover';
     pri.textContent = 'En-suite sleeping pods, minimized non-revenue floor area';
@@ -767,12 +828,17 @@ function showPlan(kind){
 }
 
 const revealEls = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-  });
-},{threshold:0.12});
-revealEls.forEach(el=>io.observe(el));
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(prefersReducedMotion){
+  revealEls.forEach(el=>el.classList.add('in'));
+} else {
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  },{threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+}
 </script>
 
 </body>
